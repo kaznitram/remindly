@@ -1,45 +1,52 @@
 // Zachary Martin
 const express = require("express");
 const app = express();
+// new *******************
+const session = require("express-session");  // need to install and import
 const path = require("path");
 const ejsLayouts = require("express-ejs-layouts");
-const reminderController = require("./controller/reminder_controller");
-const authController = require("./controller/auth_controller");
-
-app.use(express.static(path.join(__dirname, "public")));
-
-app.use(express.urlencoded({ extended: false }));
-
-app.use(ejsLayouts);
+const port = 3001;
 
 app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "public"))); // CSS, images
+// new ****************
+app.use(
+  session({  // default configs for express session
+    secret: "secret",
+    resave: true,
+    saveUninitialized: false
+  })
+);
 
-// Routes start here
+// new ****************
+const passport = require("./middleware/passport");
+const reminderRoute = require("./routes/reminderRoute");  // index
+const authRoute = require("./routes/authRoute");
 
-app.get("/reminders", reminderController.list);
+app.use(express.urlencoded({ extended: false }));  // he has it set to true in the vid???
+app.use(ejsLayouts);
+// new ****************
+app.use(passport.initialize());
+// new ****************
+app.use(passport.session());
 
-app.get("/reminder/new", reminderController.new);
 
-app.get("/reminder/:id", reminderController.listOne);
 
-app.get("/reminder/:id/edit", reminderController.edit);
 
-app.post("/reminder/", reminderController.create);
+// Routes 
+// ----------------
+app.use("/reminder", reminderRoute);
+// *******************
+// Many instances of "/reminders" in original html
+// but it makes more sense to have that be "/reminder" for the route home
+// ********************
+//app.get("/reminders", reminderController.list);  // leave this one for now
+app.use("/auth", authRoute);
 
-// Implement this yourself
-app.post("/reminder/update/:id", reminderController.update);
 
-// Implement this yourself
-app.post("/reminder/delete/:id", reminderController.delete);
 
-// Fix this to work with passport! The registration does not need to work, you can use the fake database for this.
-app.get("/register", authController.register);
-app.get("/login", authController.login);
-app.post("/register", authController.registerSubmit);
-app.post("/login", authController.loginSubmit);
-
-app.listen(3001, function () {
+app.listen(port, function () {
   console.log(
-    "Server running. Visit: localhost:3001/reminders in your browser 🚀"
+    `Server running. Visit: localhost:${port}/reminders in your browser 🚀`
   );
 });
