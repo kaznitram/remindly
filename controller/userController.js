@@ -17,8 +17,8 @@ const getUserByEmailIdAndPassword = (email, password) => {
     return null;
 };
 
-// oh shoot. should this have been getUserById??????????
-// in the video used email, but using id here?
+
+
 const getUserById = (id) => {
     let user = userModel.findById(id);
     if (user)

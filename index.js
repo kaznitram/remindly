@@ -22,6 +22,7 @@ app.use(
 const passport = require("./middleware/passport");
 const reminderRoute = require("./routes/reminderRoute");  // index
 const authRoute = require("./routes/authRoute");
+const githubPassport = require("./middleware/passportGithub");
 
 app.use(express.urlencoded({ extended: false }));  // he has it set to true in the vid???
 app.use(ejsLayouts);
@@ -29,6 +30,9 @@ app.use(ejsLayouts);
 app.use(passport.initialize());
 // new ****************
 app.use(passport.session());
+// github stuff
+app.use(githubPassport.initialize());
+app.use(githubPassport.session());
 
 
 
